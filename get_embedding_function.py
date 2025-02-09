@@ -4,9 +4,9 @@ from langchain.embeddings import OpenAIEmbeddings
 
 def get_embedding_function():
     """Fetch embedding using OpenRouter API"""
-    api_key = os.getenv("OPENROUTER_API_KEY")  # Load from environment
+    api_key = os.getenv("OPENAI_API_KEY")  # Load from environment
     if not api_key:
-        raise ValueError("OPENROUTER_API_KEY is missing. Set it in your .env file.")
+        raise ValueError("OPENAI_API_KEY is missing. Set it in your .env file.")
 
     def fetch_embedding(text):
         """Make a request to OpenRouter API for embeddings"""
