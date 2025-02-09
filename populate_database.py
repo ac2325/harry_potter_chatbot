@@ -9,12 +9,11 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
 from langchain_community.vectorstores import Chroma
 
-from dotenv import load_dotenv 
-load_dotenv()
+
 
 CHROMA_PATH = "chroma_db"
 DATA_PATH = "data"
-OPENROUTER_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
 
 
 def get_embedding_function(text):

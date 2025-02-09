@@ -1,23 +1,25 @@
-import os
+import streamlit as st
 import requests
-from langchain.embeddings import OpenAIEmbeddings
 
-def get_embedding_function():
-    """Fetch embedding using OpenRouter API"""
-    api_key = os.getenv("OPENAI_API_KEY")  # Load from environment
-    if not api_key:
-        raise ValueError("OPENAI_API_KEY is missing. Set it in your .env file.")
+# Fetch the API key from Streamlit secrets
+api_key = st.secrets["OPENROUTER_API_KEY"]
 
-    def fetch_embedding(text):
-        """Make a request to OpenRouter API for embeddings"""
-        url = "https://openrouter.ai/api/v1/embeddings"
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
-        payload = {"input": text, "model": "openai-text-embedding-ada-002"}
-        
-        response = requests.post(url, headers=headers, json=payload)
-        if response.status_code == 200:
-            return response.json()["data"][0]["embedding"]
-        else:
-            raise ValueError(f"Error fetching embedding: {response.text}")
+# Debugging: Check if key is loaded (remove in production)
+st.write(f"✅ API Key Loaded: {api_key[:5]}********")
 
-    return OpenAIEmbeddings(openai_api_key=api_key, embedding_func=fetch_embedding)
+# Example function to call OpenRouter
+def get_embedding_function(text):
+    """Fetch embedding from OpenRouter API"""
+    url = "https://openrouter.ai/api/v1/embeddings"
+    headers = {
+        "Authorization": f"Bearer {api_key}",  # Use secret API key
+        "Content-Type": "application/json"
+    }
+    payload = {"input": text, "model": "openai-text-embedding-ada-002"}
+    response = requests.post(url, headers=headers, json=payload)
+    
+    if response.status_code == 200:
+        return response.json()["data"][0]["embedding"]
+    else:
+        print(f"Error fetching embedding: {response.text}")
+        return None
