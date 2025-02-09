@@ -11,7 +11,6 @@ sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 
 CHROMA_PATH = "chroma"
-
 PROMPT_TEMPLATE = """
 Answer the question based only on the following context:
 
