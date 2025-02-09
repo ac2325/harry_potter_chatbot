@@ -1,3 +1,4 @@
+!pip update sqlite
 import argparse
 import os
 import shutil
