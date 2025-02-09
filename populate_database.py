@@ -5,11 +5,9 @@ from langchain.document_loaders.pdf import PyPDFDirectoryLoader
 from langchain_community.document_loaders import PyPDFLoader 
 
 from get_embedding_function import get_embedding_function
-from langchain.vectorstores import Chroma  
-from langchain.vectorstores.chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.schema.document import Document
-
+from langchain_community.vectorstores import Chroma
 
 CHROMA_PATH = "chroma"
 DATA_PATH = "data"
@@ -56,7 +54,14 @@ CHROMA_PATH = "/Users/akankshachatterjee/Downloads/streamlit_trial/data/chroma_d
 
 def add_to_chroma(chunks: list[Document]):
     # Load the existing database.
-    db = Chroma(embedding_function=get_embedding_function())  # In-memory, no persist_directory
+    from chromadb.config import Settings
+
+    db = Chroma(
+        persist_directory=CHROMA_PATH,
+        embedding_function=embedding_function,
+        client_settings=Settings(is_persistent=True, chroma_db_impl="duckdb"),  # Force DuckDB
+    )
+
 
 
     # Calculate Page IDs.
