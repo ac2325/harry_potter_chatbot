@@ -1,11 +1,7 @@
-import streamlit as st
 import requests
 
-# Fetch the API key from Streamlit secrets
+import streamlit as st
 api_key = st.secrets["OPENROUTER_API_KEY"]
-
-# Debugging: Check if key is loaded (remove in production)
-st.write(f"✅ API Key Loaded: {api_key[:5]}********")
 
 # Example function to call OpenRouter
 def get_embedding_function(text):
