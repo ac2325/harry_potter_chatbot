@@ -1,13 +1,13 @@
 import streamlit as st
 import os
 import requests
-from langchain.vectorstores.chroma import Chroma
+from langchain_community.vectorstores import Chroma  # ✅ Fixed deprecated import
 from langchain.prompts import ChatPromptTemplate
 from get_embedding_function import get_embedding_function
 
+# ✅ Fix SQLite issue for ChromaDB compatibility
 __import__('pysqlite3')
 import sys
-
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
 # ✅ Load API key from Streamlit secrets
@@ -32,7 +32,7 @@ st.set_page_config(page_title="RAG Chatbot", layout="wide")
 st.title("🔍 Harry Potter Chatbot")
 st.write("Ask any question about Harry Potter.")
 
-# Text input for query
+# ✅ User Input
 query = st.text_input("Enter your question:")
 
 if st.button("Get Answer"):
@@ -40,23 +40,28 @@ if st.button("Get Answer"):
         st.warning("Enter your question.")
     else:
         def query_rag(query_text):
-            embedding_function = get_embedding_function()
+            """Fetch embeddings, retrieve relevant context, and call OpenRouter API."""
+            embedding_function = get_embedding_function  # ✅ Fix function reference
             db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
+
             results = db.similarity_search_with_score(query_text, k=5)
 
-            # Build context from retrieved docs
+            if not results:
+                return "I couldn't find an answer in the database.", []
+
+            # ✅ Prepare context for LLM
             context_text = "\n\n---\n\n".join([doc.page_content for doc, _ in results])
             prompt_template = ChatPromptTemplate.from_template(PROMPT_TEMPLATE)
             prompt = prompt_template.format(context=context_text, question=query_text)
 
-            # ✅ Call OpenRouter API for LLM response
+            # ✅ OpenRouter API request
             url = "https://openrouter.ai/api/v1/chat/completions"
             headers = {
                 "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             }
             payload = {
-                "model": "openai/gpt-4o",
+                "model": "mistral",  # ✅ Switched to "mistral" (faster & cheaper)
                 "messages": [
                     {"role": "system", "content": "You are an expert on Harry Potter."},
                     {"role": "user", "content": prompt},
@@ -64,15 +69,17 @@ if st.button("Get Answer"):
                 "temperature": 0.7,
             }
 
-            response = requests.post(url, headers=headers, json=payload)
-
-            if response.status_code == 200:
+            try:
+                response = requests.post(url, headers=headers, json=payload)
+                response.raise_for_status()  # ✅ Raises error for bad responses
                 response_text = response.json()["choices"][0]["message"]["content"]
-            else:
-                response_text = f"❌ Error: {response.text}"
+            except requests.exceptions.RequestException as e:
+                response_text = f"❌ OpenRouter API Error: {e}"
 
-            return response_text, [doc.metadata.get("id", None) for doc, _ in results]
+            sources = [doc.metadata.get("id", "Unknown") for doc, _ in results]
+            return response_text, sources
 
+        # ✅ Get response from query
         response, sources = query_rag(query)
         st.subheader("Response")
         st.write(response)
