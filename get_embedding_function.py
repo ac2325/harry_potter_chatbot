@@ -1,12 +1,15 @@
 import requests
 import streamlit as st
+from langchain.embeddings.base import Embeddings  # ✅ Required for compatibility
+
+# ✅ Load API key
 api_key = st.secrets["OPENROUTER_API_KEY"]
 
+class OpenRouterEmbeddings(Embeddings):
+    """Wrapper for OpenRouter API embedding calls that implements LangChain's interface."""
 
-def get_embedding_function():
-    """Returns a function that generates embeddings using OpenRouter."""
-    
-    def fetch_embedding(text):
+    def embed_query(self, text):
+        """Fetch embedding from OpenRouter API."""
         url = "https://openrouter.ai/api/v1/embeddings"
         headers = {
             "Authorization": f"Bearer {api_key}",
@@ -20,5 +23,7 @@ def get_embedding_function():
         else:
             print(f"❌ Error fetching embedding: {response.text}")
             return None
-    
-    return fetch_embedding 
+
+def get_embedding_function():
+    """Return an instance of OpenRouterEmbeddings that can be used by Chroma."""
+    return OpenRouterEmbeddings()
