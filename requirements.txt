@@ -5,3 +5,4 @@ chromadb
 ollama
 boto3
 pypdf
+pysqlite3-binary

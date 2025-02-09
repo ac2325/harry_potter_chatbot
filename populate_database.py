@@ -1,4 +1,3 @@
-!pip update sqlite
 import argparse
 import os
 import shutil
@@ -56,12 +55,7 @@ CHROMA_PATH = "/Users/akankshachatterjee/Downloads/streamlit_trial/data/chroma_d
 
 def add_to_chroma(chunks: list[Document]):
     embedding_function = get_embedding_function()  # ✅ Explicitly define it
-
-    db = Chroma(
-        persist_directory=CHROMA_PATH,
-        embedding_function=embedding_function,  # ✅ Now it's defined
-        client_settings=Settings(chroma_db_impl="duckdb")
-    )
+    db = Chroma(persist_directory=CHROMA_PATH, embedding_function=embedding_function)
 
 
 
