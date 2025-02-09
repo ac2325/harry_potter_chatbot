@@ -56,9 +56,8 @@ CHROMA_PATH = "/Users/akankshachatterjee/Downloads/streamlit_trial/data/chroma_d
 
 def add_to_chroma(chunks: list[Document]):
     # Load the existing database.
-    db = Chroma(
-        persist_directory=CHROMA_PATH, embedding_function=get_embedding_function()
-    )
+    db = Chroma(embedding_function=get_embedding_function())  # In-memory Chroma
+
 
     # Calculate Page IDs.
     chunks_with_ids = calculate_chunk_ids(chunks)
