@@ -55,12 +55,16 @@ CHROMA_PATH = "/Users/akankshachatterjee/Downloads/streamlit_trial/data/chroma_d
 def add_to_chroma(chunks: list[Document]):
     # Load the existing database.
     from chromadb.config import Settings
-
     db = Chroma(
         persist_directory=CHROMA_PATH,
         embedding_function=embedding_function,
-        client_settings=Settings(is_persistent=True, chroma_db_impl="duckdb"),  # Force DuckDB
+        client_settings=Settings(
+            is_persistent=True, 
+            allow_reset=True, 
+            chroma_db_impl="duckdb"  # Force Chroma to use DuckDB instead of SQLite
+        )
     )
+
 
 
 
