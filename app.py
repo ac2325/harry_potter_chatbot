@@ -4,6 +4,8 @@ from langchain_community.llms.ollama import Ollama
 from langchain.prompts import ChatPromptTemplate
 from get_embedding_function import get_embedding_function
 
+
+
 CHROMA_PATH = "chroma"
 
 PROMPT_TEMPLATE = """
